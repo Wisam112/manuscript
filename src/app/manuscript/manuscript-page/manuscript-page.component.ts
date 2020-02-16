@@ -3,6 +3,7 @@ import { ManuscriptService } from "../manuscript.service";
 import { Manuscript } from "../manuscript";
 import { testDB, testFiles } from "../test/testFiles";
 import { User } from "../user";
+import { ManuscriptDetailsComponent } from "../manuscript-details/manuscript-details.component";
 
 @Component({
   selector: "app-manuscript-page",
@@ -32,6 +33,7 @@ export class ManuscriptPageComponent implements OnInit {
   testModel: boolean = false;
   testFiles: boolean = false;
   showForm: boolean;
+  showMinForm: boolean = true;
   selectedManuscript: Manuscript = null;
 
   constructor(private manuscriptService: ManuscriptService) {}
@@ -153,6 +155,7 @@ export class ManuscriptPageComponent implements OnInit {
   selectManuscript(manuscript) {
     this.selectedManuscript = manuscript;
     this.showForm = Boolean(manuscript);
+    this.showMinForm = true;
     console.log(manuscript);
     if (manuscript) this.toggleMainWindow(0);
   }
@@ -286,6 +289,8 @@ export class ManuscriptPageComponent implements OnInit {
   }
 
   createNewManuscript() {
+    this.showForm = true;
+    this.showMinForm = true;
     this.noManuscriptSelected();
     var manuscript: Manuscript = !this.testModel
       ? new Manuscript(

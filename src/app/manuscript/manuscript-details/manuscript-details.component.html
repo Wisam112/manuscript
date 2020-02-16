@@ -1,4 +1,8 @@
-<div id="formwrapper" *ngIf="manuscript" class="col-md-4 full-height">
+<div
+  id="formwrapper"
+  *ngIf="manuscript && (showMinForm || !manuscript._id)"
+  class="col-md-4 full-height"
+>
   <div
     class="row well well-lg"
     [ngClass]="{
@@ -7,7 +11,7 @@
       'full-height': !showUploads
     }"
   >
-    <form #form="ngForm">
+    <form>
       <!-- TODO fix -->
       <button
         *ngIf="!manuscript._id"
@@ -23,9 +27,7 @@
         data-dismiss="alert"
         aria-label="Close"
       >
-        <span aria-hidden="true" (click)="toggleForm(0)"
-          >Hide&nbsp;&nbsp;&nbsp;</span
-        >
+        <span aria-hidden="true" (click)="hide()">Hide&nbsp;&nbsp;&nbsp;</span>
       </button>
       <h4 *ngIf="!manuscript._id">New Manuscript</h4>
       <h4 *ngIf="manuscript._id">Manuscript Details</h4>
@@ -44,7 +46,7 @@
               [ngClass]="setClass(title)"
               placeholder="title"
               [required]="true"
-              [disabled]="inProgress"
+              [disabled]="inProgress || stopEdit"
             />
             <p class="capitalize text-danger" [hidden]="isValid(title)">
               <span class="glyphicon glyphicon-remove-sign"></span>
@@ -65,7 +67,7 @@
               [ngClass]="setClass(archive)"
               placeholder="archive name"
               [required]="true"
-              [disabled]="inProgress"
+              [disabled]="inProgress || stopEdit"
             />
             <p class="capitalize text-danger" [hidden]="isValid(archive)">
               <span class="glyphicon glyphicon-remove-sign"></span>
@@ -88,7 +90,7 @@
               [ngClass]="setClass(author)"
               placeholder="author"
               [required]="true"
-              [disabled]="inProgress"
+              [disabled]="inProgress || stopEdit"
             />
             <p class="capitalize text-danger" [hidden]="isValid(author)">
               <span class="glyphicon glyphicon-remove-sign"></span>
@@ -111,7 +113,7 @@
               [ngClass]="setClass(authorr)"
               placeholder="author regin"
               [required]="true"
-              [disabled]="inProgress"
+              [disabled]="inProgress || stopEdit"
             />
             <p class="capitalize text-danger" [hidden]="isValid(authorr)">
               <span class="glyphicon glyphicon-remove-sign"></span>
@@ -128,7 +130,7 @@
             <my-date-picker
               [options]="{ dateFormat: 'dd.mm.yyyy' }"
               [required]="true"
-              [disabled]="inProgress"
+              [disabled]="inProgress || stopEdit"
               [ngModel]="manuscript.date"
               (ngModelChange)="setDate($event)"
               name="date"
@@ -156,7 +158,7 @@
               [ngClass]="setClass(copyer)"
               placeholder="copyer"
               [required]="true"
-              [disabled]="inProgress"
+              [disabled]="inProgress || stopEdit"
             />
             <p class="capitalize text-danger" [hidden]="isValid(copyer)">
               <span class="glyphicon glyphicon-remove-sign"></span>
@@ -179,7 +181,7 @@
               [ngClass]="setClass(copyerr)"
               placeholder="copyer regin"
               [required]="true"
-              [disabled]="inProgress"
+              [disabled]="inProgress || stopEdit"
             />
             <p class="capitalize text-danger" [hidden]="isValid(copyerr)">
               <span class="glyphicon glyphicon-remove-sign"></span>
@@ -196,7 +198,7 @@
             <my-date-picker
               [options]="{ dateFormat: 'dd.mm.yyyy' }"
               [required]="true"
-              [disabled]="inProgress"
+              [disabled]="inProgress || stopEdit"
               [ngModel]="manuscript.cdate"
               (ngModelChange)="setDate($event)"
               name="cdate"
@@ -220,7 +222,7 @@
               [(ngModel)]="manuscript.language"
               name="language"
               [required]="true"
-              [disabled]="inProgress"
+              [disabled]="inProgress || stopEdit"
             >
               <option *ngFor="let lang of langs" [value]="lang">{{
                 lang
@@ -241,7 +243,7 @@
               [ngClass]="setClass(content)"
               placeholder="content"
               [required]="true"
-              [disabled]="inProgress"
+              [disabled]="inProgress || stopEdit"
             />
             <p class="capitalize text-danger" [hidden]="isValid(content)">
               <span class="glyphicon glyphicon-remove-sign"></span>
@@ -265,7 +267,7 @@
               [ngClass]="setClass(description)"
               placeholder="description"
               [required]="true"
-              [disabled]="inProgress"
+              [disabled]="inProgress || stopEdit"
             ></textarea>
             <p class="capitalize text-danger" [hidden]="isValid(description)">
               <span class="glyphicon glyphicon-remove-sign"></span>
@@ -294,7 +296,7 @@
                 confirmExecFunc(prompt, setVersion, $event.target.value)
               "
               [required]="true"
-              [disabled]="inProgress"
+              [disabled]="inProgress || stopEdit"
             >
               <option
                 *ngFor="let version of manuscript.versions; let i = index"
@@ -316,7 +318,7 @@
               [(ngModel)]="manuscript.keywords"
               name="keywords"
               [required]="true"
-              [disabled]="inProgress"
+              [disabled]="inProgress || stopEdit"
             >
               <option *ngFor="let keyword of keywords" [value]="keyword">{{
                 keyword
@@ -337,7 +339,7 @@
               multiple
               (click)="uploadProgress = 0"
               (change)="getFiles(multFiles.files)"
-              [disabled]="inProgress"
+              [disabled]="inProgress || stopEdit"
             />
             <input
               type="file"
@@ -345,7 +347,7 @@
               webkitDirectory
               (click)="uploadProgress = 0"
               (change)="getFiles(folderInput.files)"
-              [disabled]="inProgress"
+              [disabled]="inProgress || stopEdit"
             />
           </div>
 
@@ -353,14 +355,14 @@
             <button
               class="btn btn-warning"
               (click)="multFiles.click()"
-              [disabled]="inProgress"
+              [disabled]="inProgress || stopEdit"
             >
               Select files
             </button>
             <button
               class="btn btn-warning "
               (click)="folderInput.click()"
-              [disabled]="inProgress"
+              [disabled]="inProgress || stopEdit"
             >
               Select folder
             </button>
@@ -396,7 +398,11 @@
             <span>{{ uploadProgress }}% Complete</span>
           </div>
         </div>
-        <div *ngIf="showFiles || multFiles.files.length + folderInput.files.length > 0">
+        <div
+          *ngIf="
+            showFiles || multFiles.files.length + folderInput.files.length > 0
+          "
+        >
           <br />
           <p
             class="text-danger"
@@ -421,7 +427,7 @@
                   data-dismiss="alert"
                   aria-label="Close"
                   (click)="removeFile(file.name)"
-                  [disabled]="inProgress"
+                  [disabled]="inProgress || stopEdit"
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -445,7 +451,7 @@
           class="btn btn-danger btn-space"
           *ngIf="!manuscript._id"
           (click)="resetHandler()"
-          [disabled]="inProgress"
+          [disabled]="inProgress || stopEdit"
         >
           Reset
         </button>
@@ -463,19 +469,19 @@
           class="btn btn-danger btn-space"
           *ngIf="manuscript._id"
           (click)="deleteManuscript(manuscript._id)"
-          [disabled]="inProgress"
+          [disabled]="inProgress || stopEdit"
         >
           Delete
         </button>
-        <br/>
-        <br/>
+        <br />
+        <br />
       </div>
       <button
         type="button"
         class="btn btn-info btn-space"
         *ngIf="formStep != 0"
         (click)="decreaseStepForm()"
-        [disabled]="inProgress"
+        [disabled]="inProgress || stopEdit"
       >
         Prev
       </button>
@@ -484,7 +490,7 @@
         class="btn btn-success btn-space"
         *ngIf="formStep != 5"
         (click)="increaseStepForm()"
-        [disabled]="inProgress"
+        [disabled]="inProgress || stopEdit"
       >
         Next
       </button>

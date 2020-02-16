@@ -40,6 +40,7 @@ var UserSchema = new Schema({
   //TODO: Chen and Nitzan: review
   _id: Schema.Types.ObjectId,
   username: String,
+  canEdit: Boolean,
   manuscriptIds: [Schema.Types.ObjectId]
 });
 
@@ -515,16 +516,19 @@ function addTestUsers() {
     {
       _id: ObjectId("111111111111111111111111"),
       username: "Scooby Doo",
+      canEdit: false,
       manuscriptIds: []
     },
     {
       _id: ObjectId("222222222222222222222222"),
       username: "Never Again",
+      canEdit: true,
       manuscriptIds: []
     },
     {
       _id: ObjectId("333333333333333333333333"),
       username: "Dani Roop",
+      canEdit: false,
       manuscriptIds: []
     }
   ];

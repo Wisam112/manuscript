@@ -36,6 +36,7 @@ export class ManuscriptDetailsComponent {
   @Input() manuscript: Manuscript;
   @Input() showForm: boolean;
   @Input() user: User;
+  @Input() showMinForm: boolean;
 
   @Input() createHandler: Function;
   @Input() updateHandler: Function;
@@ -47,6 +48,9 @@ export class ManuscriptDetailsComponent {
 
   @Output() resetEvent: EventEmitter<string> = new EventEmitter<string>();
   @Output() showFormChange: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() showMinFormChange: EventEmitter<boolean> = new EventEmitter<
+    boolean
+  >();
 
   langs: string[] = ["English", "French", "Spanish", "Italian"];
   keywords: string[] = [
@@ -69,6 +73,7 @@ export class ManuscriptDetailsComponent {
   markedForDelete: ManuscriptFile[] = [];
   uploadProgress: number;
   inProgress: boolean = false;
+  stopEdit: boolean = false;
   originalManuscript: Manuscript;
   formStep: number = 0;
   showFiles: boolean = false;
@@ -76,7 +81,10 @@ export class ManuscriptDetailsComponent {
   constructor(
     private manuscriptService: ManuscriptService,
     private modalService: NgbModal
-  ) {}
+  ) {
+    this.showMinForm = true;
+    this.showMinFormChange.emit(true);
+  }
 
   get diagnostic() {
     return JSON.stringify(this.manuscript) + this.showForm;
@@ -365,5 +373,18 @@ export class ManuscriptDetailsComponent {
       JSON.stringify(this.originalManuscript) !==
         JSON.stringify(this.manuscript)
     );
+  }
+
+  canEdit() {
+    if (this.stopEdit == false) {
+      this.stopEdit = true;
+    } else {
+      this.stopEdit = false;
+    }
+  }
+
+  hide() {
+    this.showMinForm = false;
+    this.showMinFormChange.emit(false);
   }
 }
